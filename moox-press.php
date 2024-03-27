@@ -30,15 +30,23 @@ function moox_auth_token()
 {
     if (isset($_GET['auth_token'])) {
         $token = $_GET['auth_token'];
-        // TODO - Implement a function to validate the token and get the user ID
-        $user_id = $token;
 
-        if ($user_id) {
-            wp_clear_auth_cookie();
-            wp_set_auth_cookie($user_id);
+        // Verify the token
+        $parts = explode('.', $token);
+        if (count($parts) === 2) {
+            $payload = $parts[0];
+            $signature = $parts[1];
+            $expected_signature = hash_hmac('sha256', $payload, MOOX_HASH);
 
-            wp_redirect(admin_url());
-            exit;
+            if (hash_equals($expected_signature, $signature)) {
+                $user_id = base64_decode($payload);
+
+                wp_clear_auth_cookie();
+                wp_set_auth_cookie($user_id);
+
+                wp_redirect(admin_url());
+                exit;
+            }
         }
     }
 }
