@@ -14,6 +14,10 @@ if (defined('LOCK_WP')) {
     $lockWp = LOCK_WP;
 }
 
+if (defined('REDIRECT_EDITOR')) {
+    $redirectEditor = REDIRECT_EDITOR;
+}
+
 function moox_lock_wp_frontend()
 {
     global $lockWp;
@@ -77,12 +81,16 @@ add_action('init', 'moox_redirect_login');
 
 function enqueue_moox_admin_script()
 {
-    wp_enqueue_script(
-        'moox-admin-js',
-        plugin_dir_url(__FILE__).'/js/moox-admin.js',
-        ['wp-element', 'wp-components', 'wp-edit-post'],
-        filemtime(plugin_dir_url(__FILE__).'/js/custom-admin.js'),
-        true
-    );
+    global $redirectEditor;
+
+    if ($redirectEditor === 'true') {
+        wp_enqueue_script(
+            'moox-admin-js',
+            plugin_dir_url(__FILE__).'js/moox-admin.js',
+            ['wp-element', 'wp-components', 'wp-edit-post'],
+            filemtime(plugin_dir_path(__FILE__).'js/moox-admin.js'),
+            true
+        );
+    }
 }
 add_action('admin_enqueue_scripts', 'enqueue_moox_admin_script');
