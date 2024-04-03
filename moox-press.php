@@ -6,6 +6,10 @@ Author: Moox
 Version: 0.1
 */
 
+if (defined('ADMIN_SLUG')) {
+    $adminSlug = ADMIN_SLUG;
+}
+
 if (defined('MOOX_HASH')) {
     $mooxHash = MOOX_HASH;
 }
@@ -27,7 +31,7 @@ if (defined('REDIRECT_LOGIN')) {
 }
 
 if (defined('REDIRECT_LOGOUT')) {
-    $redirectLogin = REDIRECT_LOGOUT;
+    $redirectLogout = REDIRECT_LOGOUT;
 }
 
 function moox_lock_wp_frontend()
@@ -80,7 +84,7 @@ function moox_redirect_logout()
 
         if (str_ends_with($url, 'wp-login.php') && isset($_GET['action']) && $_GET['action'] === 'logout') {
             wp_logout();
-            wp_redirect('https://'.$_SERVER['SERVER_NAME'].'/admin/logout');
+            wp_redirect('https://'.$_SERVER['SERVER_NAME'].'/moox/logout');
             exit;
         }
     }
@@ -90,12 +94,13 @@ add_action('init', 'moox_redirect_logout');
 function moox_redirect_login()
 {
     global $redirectLogin;
+    global $adminSlug;
 
     if ($redirectLogin === 'true') {
         $url = strtok($_SERVER['REQUEST_URI'], '?');
 
         if (str_ends_with($url, 'wp-login.php')) {
-            wp_redirect('https://'.$_SERVER['SERVER_NAME'].'/admin/login');
+            wp_redirect('https://'.$_SERVER['SERVER_NAME'].$adminSlug.'/login');
             exit;
         }
     }
